@@ -1,16 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-game-states',
   templateUrl: './game-states.component.html',
   styleUrls: ['./game-states.component.css']
 })
-export class GameStatesComponent implements OnInit {
+export class GameStatesComponent {
 
-  constructor() { }
-
-  ngOnInit(): void {
-    
+  protected onStateEnter(stateName: string) {
+    console.log(`Entered state: ${stateName}`);
   }
 
   clearCanvas(canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
