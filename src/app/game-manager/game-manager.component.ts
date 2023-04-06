@@ -10,50 +10,68 @@ import { MainMenuComponent } from '../main-menu/main-menu.component';
   providers: [MainMenuComponent]
 })
 export class GameManagerComponent extends GameStatesComponent {
+  @ViewChild(CanvasComponent, {static: true}) canvasElement!: CanvasComponent;
 
+  playButtonCallback = () => {}
   canvasWidth = 800;
   canvasHeight = 600;
+  buttonWidth = 100;
+  buttonHeight = 40;
+  canvas!: HTMLCanvasElement;
+  context!: CanvasRenderingContext2D;
+  buttonX = (this.canvasWidth - this.buttonWidth) / 2;
+  buttonY = (this.canvasHeight - this.buttonHeight) / 2;
+  playButtonEventListener: (el: any) => void;
 
-  @ViewChild(CanvasComponent, {static: true}) canvasComponent!: CanvasComponent;
-
-  constructor(
-    private mainMenu: MainMenuComponent
-  ) {
+  constructor(private mainMenu: MainMenuComponent) {
     super();
+    this.playButtonEventListener = (el) => {
+      if (
+        el.offsetX >= this.buttonX &&
+        el.offsetX <= this.buttonX + this.buttonWidth &&
+        el.offsetY >= this.buttonY &&
+        el.offsetY <= this.buttonY + this.buttonHeight
+      ) {
+        console.log('Play button clicked');
+        this.playButtonCallback();
+      }
+    };
   }
 
   ngOnInit(): void {
-    this.onStateEnter('MainMenu');
+    // this.onStateEnter();
     console.log('GameManager Initialised');
   }
 
   ngAfterViewInit(): void {
-    const canvasElement: HTMLCanvasElement = this.canvasComponent.canvasRef.nativeElement;
-    const context: CanvasRenderingContext2D = canvasElement.getContext('2d')!;
-    this.clearCanvas(canvasElement, context);
+    this.canvas = this.canvasElement.canvasRef.nativeElement;
+    this.context = this.canvas.getContext('2d')!;
+    this.clearCanvas(this.canvas, this.context);
     this.drawPlayButton();
+    this.canvas.addEventListener('click', this.playButtonEventListener);
   }
 
-  private drawPlayButton() {
-    const canvasElement: HTMLCanvasElement = this.canvasComponent.canvasRef.nativeElement;
-    const context: CanvasRenderingContext2D = canvasElement.getContext('2d')!;
-  
-    const canvasCenterX = canvasElement.width / 2;
-    const canvasCenterY = canvasElement.height / 2;
-  
+  drawPlayButton() {
+    const canvasCenterX = this.canvasWidth / 2;
+    const canvasCenterY = this.canvasHeight / 2;
+
     const buttonWidth = 100;
     const buttonHeight = 50;
     const buttonX = canvasCenterX - buttonWidth / 2;
     const buttonY = canvasCenterY - buttonHeight / 2;
-  
-    context.fillStyle = '#ffffff';
-    context.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-  
-    context.fillStyle = '#000000';
-    context.font = 'bold 20px sans-serif';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText('Play', canvasCenterX, canvasCenterY);
+
+    this.context.fillStyle = '#ffffff';
+    this.context.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+    this.context.fillStyle = '#000000';
+    this.context.font = 'bold 20px sans-serif';
+    this.context.textAlign = 'center';
+    this.context.textBaseline = 'middle';
+    this.context.fillText('Play', canvasCenterX, canvasCenterY);
   }
-  
+
+  onPlayButtonClick(callback: any) {
+    this.playButtonCallback = callback;
+  }
+
 }
